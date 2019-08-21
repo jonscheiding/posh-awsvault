@@ -15,7 +15,7 @@ function New-AWSVaultAlias {
 }
 
 function Invoke-AWSVault {
-  $AWSProfile = $Env:AWS_PROFILE
+  $AWSProfile = (Get-Item Env:\AWS_PROFILE).Value
   $Command = $args[0]
 
   Write-Host -ForegroundColor Cyan `
@@ -26,9 +26,18 @@ function Invoke-AWSVault {
     # AWS_PROFILE needs to be unset while calling aws-vault
     # See https://github.com/99designs/aws-vault/issues/410
     #
-    $Env:AWS_PROFILE = $null
-    aws-vault exec $AWSProfile -- @args
+    Remove-Item Env:\AWS_PROFILE
+    Invoke-External aws-vault exec $AWSProfile -- @args
   } finally {
-      $Env:AWS_PROFILE = $AWSProfile
+      Set-Item Env:\AWS_PROFILE $AWSProfile
   }
+}
+
+function Invoke-External {
+  param(
+    [Parameter(Mandatory = $true)] [string] $Command,
+    [Parameter(ValueFromRemainingArguments = $true)] $Arguments
+  )
+
+  & $Command $Arguments
 }
