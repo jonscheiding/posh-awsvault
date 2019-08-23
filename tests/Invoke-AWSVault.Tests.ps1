@@ -1,23 +1,51 @@
 Import-Module -Force .\posh-awsvault.psm1
 
-$ENV_AWS_PROFILE = "someprofile"
-
-Mock Get-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { @{ Value = $ENV_AWS_PROFILE } }.GetNewClosure()
-Mock Set-Item -ModuleName posh-awsvault -ParameterFilter { $Path -like "Env:\AWS_PROFILE" } { $ENV_AWS_PROFILE = $Value }.GetNewClosure()
-Mock Remove-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { $ENV_AWS_PROFILE = $null }.GetNewClosure()
+$DebugPreference = "Continue"
 
 Describe "Invoke-AWSVault" {
-  It "Calls aws-vault exec for the command" {
-    Mock Invoke-External { Write-Debug "Invoke-External: $Command $Arguments" } `
-    -ModuleName posh-awsvault `
-    -Verifiable `
-    -ParameterFilter { 
-      "aws-vault" -eq $Command -and
-      "exec someprofile somecommand someargument" -eq $Arguments
+  $global:TEST_VARS = @{
+    AWS_PROFILE = "someprofile"
+  }
+
+  Mock Get-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { @{ Value = $global:TEST_VARS.AWS_PROFILE } }
+  Mock Set-Item -ModuleName posh-awsvault -ParameterFilter { $Path -like "Env:\AWS_PROFILE" } { $global:TEST_VARS.AWS_PROFILE = $Value }
+  Mock Remove-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { $global:TEST_VARS.AWS_PROFILE = $null }
+  
+  Context 'When Invoke-External is successful' {
+    Mock Invoke-External -ModuleName posh-awsvault { 
+      $global:TEST_VARS.AWS_PROFILE_WHEN_CALLED = $global:TEST_VARS.AWS_PROFILE
+      Write-Debug "Invoke-External -Command $Command -Arguments $Arguments" 
     }
 
     Invoke-AWSVault somecommand someargument
+    
+    It "Passes the correct arguments to Invoke-External" {
+      Assert-MockCalled Invoke-External -ModuleName posh-awsvault `
+        -ParameterFilter { 
+          $Command -eq "aws-vault" -and `
+          (Compare-Object $Arguments @("exec", "someprofile", "somecommand", "someargument")).Length -eq 0
+        }
+    }
 
-    Assert-VerifiableMock
+    It "Unsets and resets AWS_PROFILE environment variable" {
+      # Due to https://github.com/99designs/aws-vault/issues/410
+      $global:TEST_VARS.AWS_PROFILE_WHEN_CALLED | Should -BeNullOrEmpty
+      $global:TEST_VARS.AWS_PROFILE | Should -Be "someprofile"
+    }
+  }
+
+  Context 'When Invoke-External throws' {
+    Mock Invoke-External -ModuleName posh-awsvault { 
+      $global:TEST_VARS.AWS_PROFILE_WHEN_CALLED = $global:TEST_VARS.AWS_PROFILE
+      throw "This is an error."
+    }
+
+    It "Bubbles up the exception" {
+      { Invoke-AWSVault somecommand someargument } | Should -Throw
+    }
+
+    It "Still resets the AWS_PROFILE environment variable" {
+      $global:TEST_VARS.AWS_PROFILE | Should -Be "someprofile"
+    }
   }
 }

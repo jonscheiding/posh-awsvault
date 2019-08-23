@@ -29,7 +29,7 @@ function Invoke-AWSVault {
     Remove-Item Env:\AWS_PROFILE
     Invoke-External aws-vault exec $AWSProfile -- @args
   } finally {
-      Set-Item Env:\AWS_PROFILE $AWSProfile
+    Set-Item Env:\AWS_PROFILE $AWSProfile
   }
 }
 
