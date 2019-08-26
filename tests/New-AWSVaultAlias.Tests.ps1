@@ -1,8 +1,6 @@
-Import-Module -Force .\posh-awsvault.psm1
-
-$DebugPreference = "Continue"
-
 Describe "New-AWSVaultAlias" {
+  Import-Module .\posh-awsvault.psm1
+
   Context "Calling New-AWSVaultAlias" {
     $TestState = @{
       "Alias" = $null
@@ -12,13 +10,15 @@ Describe "New-AWSVaultAlias" {
     New-AWSVaultAlias somecommand
 
     It "Creates an alias" {
-      { $TestState["Alias"] = Get-Alias somecommand } | Should -Not -Throw
+      $TestState["Alias"] = Get-Alias somecommand
+      $TestState["Alias"] | Should -Not -BeNull
+      Write-Debug ($TestState["Alias"] | Out-String)
     }
 
-    Import-Module -Force -ModuleInfo $TestState["Alias"].Module
-
     It "Points to a function" {
-      { $TestState["Function"] = Get-Item Function:\$($TestState["Alias"].Definition) } | Should -Not -Throw      
+      $TestState["Function"] = Get-Item Function:\$($TestState["Alias"].Definition)
+      $TestState["Function"] | Should -Not -BeNull
+      Write-Debug ($TestState["Function"] | Out-String)
     }
 
     Mock Invoke-AWSVault -ModuleName $TestState["Alias"].Module { 
@@ -36,4 +36,6 @@ Describe "New-AWSVaultAlias" {
 
     Remove-Module $TestState["Function"].Module -ErrorAction SilentlyContinue
   }
+
+  Remove-Module posh-awsvault
 }

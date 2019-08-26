@@ -1,8 +1,8 @@
-Import-Module -Force .\posh-awsvault.psm1
-
 $DebugPreference = "Continue"
 
 Describe "Invoke-AWSVault" {
+  Import-Module .\posh-awsvault.psm1
+
   $global:TEST_VARS = @{
     AWS_PROFILE = "someprofile"
   }
@@ -48,4 +48,6 @@ Describe "Invoke-AWSVault" {
       $global:TEST_VARS.AWS_PROFILE | Should -Be "someprofile"
     }
   }
+
+  Remove-Module posh-awsvault
 }
