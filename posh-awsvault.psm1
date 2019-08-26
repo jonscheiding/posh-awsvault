@@ -4,14 +4,26 @@ function New-AWSVaultAlias {
     [string] $CommandName
   )
 
-  $FunctionName = "aws-vault-$CommandName"
+  $ModuleName = "posh-awsvault-$CommandName"
 
-  $FunctionScriptBlock = {
-    Invoke-AWSVault (Get-Command $CommandName) $args
-  }.GetNewClosure()
+  $Module = New-Module -Name $ModuleName -ArgumentList $CommandName {
+    param(
+      [Parameter(Position = 0)] $CommandName
+    )
 
-  Set-Item -Path function:global:$FunctionName -Value $FunctionScriptBlock
-  New-Alias -Name $CommandName -Value $FunctionName -Scope Global
+    $FunctionName = "Invoke-AWSVault_$CommandName"
+
+    $FunctionScriptBlock = {
+      Invoke-AWSVault (Get-Command $CommandName) $args
+    }
+  
+    Set-Item -Path function:\$FunctionName -Value $FunctionScriptBlock
+    Set-Alias -Name $CommandName -Value $FunctionName
+
+    Export-ModuleMember -Alias $CommandName -Function $FunctionName
+  }
+  
+  $Module | Import-Module -Force -Global
 }
 
 function Invoke-AWSVault {
