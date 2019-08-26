@@ -53,3 +53,9 @@ function Invoke-External {
 
   & $Command $Arguments
 }
+
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { 
+  Get-Module `
+    | Where-Object { $_.Name.StartsWith("posh-awsvault-") } `
+    | Remove-Module
+}
