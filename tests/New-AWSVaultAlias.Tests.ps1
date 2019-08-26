@@ -3,7 +3,7 @@ Import-Module -Force .\posh-awsvault.psm1
 $DebugPreference = "Continue"
 
 Describe "New-AWSVaultAlias" {
-  Context "When called to create an alias" {
+  Context "Calling New-AWSVaultAlias" {
     $TestState = @{
       "Alias" = $null
       "Function" = $null
@@ -11,7 +11,7 @@ Describe "New-AWSVaultAlias" {
 
     New-AWSVaultAlias somecommand
 
-    It "Is created" {
+    It "Creates an alias" {
       { $TestState["Alias"] = Get-Alias somecommand } | Should -Not -Throw
     }
 
