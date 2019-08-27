@@ -1,7 +1,7 @@
 $DebugPreference = "Continue"
 
 Describe "Invoke-AWSVault" {
-  Import-Module .\posh-awsvault.psm1
+  Import-Module .\posh-awsvault.psd1
 
   $global:TEST_VARS = @{
     AWS_PROFILE = "someprofile"

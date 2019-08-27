@@ -1,5 +1,5 @@
 Describe "New-AWSVaultAlias" {
-  Import-Module .\posh-awsvault.psm1
+  Import-Module .\posh-awsvault.psd1
 
   Context "Calling New-AWSVaultAlias" {
     $TestState = @{

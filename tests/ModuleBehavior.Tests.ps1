@@ -2,7 +2,7 @@ Describe "The posh-awsvault module" {
   Context "When imported and used to create an alias" {
     $TestState = @{}
 
-    Import-Module .\posh-awsvault.psm1
+    Import-Module .\posh-awsvault.psd1
 
     New-AWSVaultAlias somecommand
 
