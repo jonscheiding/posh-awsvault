@@ -30,7 +30,7 @@ CompanyName = 'Jon Scheiding'
 Copyright = '(c) Jon Scheiding. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell cmdlet for easily creating aliases that call commands through aws-vault.'
+Description = 'PowerShell cmdlet for easily creating aliases that call commands through aws-vault using your current AWS CLI profile.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''

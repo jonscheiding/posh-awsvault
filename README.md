@@ -7,7 +7,7 @@
 
 ## Overview
 
-**posh-awsvault** is a PowerShell module that makes it easy to create aws-vault aliases for commands.
+**posh-awsvault** is a PowerShell module that makes it easy to call aws-vault using your current AWS CLI profile.
 
 This tool is useful if you:
 
