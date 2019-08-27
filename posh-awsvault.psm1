@@ -107,7 +107,15 @@ function Invoke-AWSVault {
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
-  $AWSProfile = (Get-Item Env:\AWS_PROFILE).Value
+  $AWSProfile = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue)
+  $WasAWSProfileSet = $true
+
+  if($null -eq $AWSProfile) {
+    $AWSProfile = "default"
+    $WasAWSProfileSet = $false
+  } else {
+    $AWSProfile = $AWSProfile.Value
+  }
 
   Write-Host -ForegroundColor Cyan `
     "Invoking aws-vault for $CommandName with profile $AWSProfile."
@@ -121,10 +129,12 @@ function Invoke-AWSVault {
     # AWS_PROFILE needs to be unset while calling aws-vault
     # See https://github.com/99designs/aws-vault/issues/410
     #
-    Remove-Item Env:\AWS_PROFILE
+    Remove-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue
     Invoke-External aws-vault exec $AWSProfile -- $Command @CommandArguments
   } finally {
-    Set-Item Env:\AWS_PROFILE $AWSProfile
+    if($WasAWSProfileSet) {
+      Set-Item Env:\AWS_PROFILE $AWSProfile
+    }
   }
 }
 
