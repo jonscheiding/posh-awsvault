@@ -103,7 +103,7 @@ function Invoke-AWSVault {
   #>
 
   param(
-    [Parameter()] $CommandName,
+    [Parameter(Mandatory = $true)] $CommandName,
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
@@ -140,3 +140,5 @@ $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
     | Where-Object { $_.Name.StartsWith("posh-awsvault-") } `
     | Remove-Module
 }
+
+New-Alias awsv Invoke-AWSVault

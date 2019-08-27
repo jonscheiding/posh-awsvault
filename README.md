@@ -27,7 +27,13 @@ Before using this module, you will need to install [aws-vault](https://github.co
 
 ## Quick Start
 
-To create a new alias:
+To use aws-vault to execute a command using your current profile:
+
+```powershell
+awsv terraform
+```
+
+To create a new alias that consistently does this:
 
 ```powershell
 New-AWSVaultAlias terraform
@@ -84,6 +90,8 @@ At line:1 char:1
 ### `Invoke-AWSVault`
 
 Calls aws-vault using your currently selected profile.  Can be useful for one-off commands that you don't want to create an alias for.
+
+Aliased as `awsv` for convenient access.
 
 ```powershell
 PS> Invoke-AWSVault terraform
