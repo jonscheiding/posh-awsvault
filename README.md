@@ -18,7 +18,7 @@ It allows you to create aliases which wrap existing commands in an `aws-vault ex
 
 ### Background
 
-I created this tool specifically to deal with Terraform and MFA in AWS.  Terraform does not support interactively prompting for MFA codes, and aws-vault was a simple way to externally deal with that problem.  But I got tired of typing `aws-vault exec $Env:AWS_PROFILE terraform` all the time.
+I created this tool specifically to deal with Terraform and MFA in AWS.  [Terraform does not support interactively prompting for MFA codes](https://github.com/terraform-providers/terraform-provider-aws/issues/2420), and aws-vault was a simple way to externally deal with that problem.  But I got tired of typing `aws-vault exec $Env:AWS_PROFILE terraform` all the time.
 
 Because this tool creates aliases and functions dynamically, it does some manipulation of dynamic modules.  Each alias resides in its own dynamic module.
 
