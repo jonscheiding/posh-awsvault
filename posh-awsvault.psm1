@@ -32,6 +32,27 @@ function New-AWSVaultAlias {
   $Module | Import-Module -Force -Global
 }
 
+function Remove-AWSVaultAlias {
+  param(
+    [Parameter(Position = 0, Mandatory = $true)]
+    [string] $AliasName
+  )
+
+  $Alias = Get-Alias $AliasName
+  if($null -eq $Alias) {
+    Return
+  }
+
+  $Module = $Alias.Module
+  if($null -eq $Module -or !$Module.Name.StartsWith("posh-awsvault-")) {
+    Write-Error "The alias '$Alias' is not a posh-awsvault alias."
+    Return
+  }
+
+  Remove-Item "Alias:\$($Alias.Name)"
+  Remove-Module $Alias.Module.Name
+}
+
 function Invoke-AWSVault {
   param(
     [Parameter()] $CommandName,
