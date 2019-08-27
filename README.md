@@ -1,6 +1,7 @@
 # posh-awsvault
 
 [![Build Status](https://img.shields.io/travis/jonscheiding/posh-awsp.svg)](https://travis-ci.org/jonscheiding/posh-vault)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/posh-awsvault.svg)](https://www.powershellgallery.com/packages/posh-vault)
 
 ## Table of Contents
 
@@ -23,7 +24,15 @@ Because this tool creates aliases and functions dynamically, it does some manipu
 
 ## Installation
 
+posh-awsvault is available in the [PowerShell Gallery](https://www.powershellgallery.com/packages/posh-awsvault), and can be installed with the following command:
+
+```powershell
+Install-Module posh-awsvault
+```
+
 Before using this module, you will need to install [aws-vault](https://github.com/99designs/aws-vault).
+
+You might also consider installing my other module, [posh-awsp](https://github.com/jonscheiding/posh-awsp), if you want an easier way to interact with multiple profiles.
 
 ## Quick Start
 
