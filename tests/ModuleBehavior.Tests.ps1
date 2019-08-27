@@ -13,7 +13,6 @@ Describe "The posh-awsvault module" {
 
     It "Exports the alias and the associated function" {
       $TestState["Module"].ExportedAliases.Keys | Should -Contain "somecommand"
-      $TestState["Module"].ExportedFunctions.Keys | Should -Contain "Invoke-AWSVault_somecommand"
     }
 
     Remove-Module posh-awsvault
