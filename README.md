@@ -1,7 +1,7 @@
 # posh-awsvault
 
 [![Build Status](https://img.shields.io/travis/jonscheiding/posh-awsp.svg)](https://travis-ci.org/jonscheiding/posh-vault)
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/posh-awsvault.svg)](https://www.powershellgallery.com/packages/posh-vault)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/posh-awsvault.svg)](https://www.powershellgallery.com/packages/posh-awsvault)
 
 ## Table of Contents
 
