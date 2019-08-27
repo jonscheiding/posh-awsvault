@@ -38,15 +38,13 @@ function Remove-AWSVaultAlias {
     [string] $AliasName
   )
 
-  $Alias = Get-Alias $AliasName
-  if($null -eq $Alias) {
-    Return
-  }
+  $ErrorActionPreference = "stop"
 
+  $Alias = Get-Alias $AliasName
   $Module = $Alias.Module
+
   if($null -eq $Module -or !$Module.Name.StartsWith("posh-awsvault-")) {
     Write-Error "The alias '$Alias' is not a posh-awsvault alias."
-    Return
   }
 
   Remove-Item "Alias:\$($Alias.Name)"
