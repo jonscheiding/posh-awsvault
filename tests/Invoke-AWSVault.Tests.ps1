@@ -10,6 +10,8 @@ Describe "Invoke-AWSVault" {
   Mock Get-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { @{ Value = $global:TEST_VARS.AWS_PROFILE } }
   Mock Set-Item -ModuleName posh-awsvault -ParameterFilter { $Path -like "Env:\AWS_PROFILE" } { $global:TEST_VARS.AWS_PROFILE = $Value }
   Mock Remove-Item -ModuleName posh-awsvault -ParameterFilter { $Path -eq "Env:\AWS_PROFILE" } { $global:TEST_VARS.AWS_PROFILE = $null }
+
+  Mock Get-Command -ModuleName posh-awsvault { $Name }
   
   Context 'When Invoke-External is successful' {
     Mock Invoke-External -ModuleName posh-awsvault { 
@@ -17,13 +19,13 @@ Describe "Invoke-AWSVault" {
       Write-Debug "Invoke-External -Command $Command -Arguments $Arguments" 
     }
 
-    Invoke-AWSVault somecommand someargument
+    Invoke-AWSVault somecommand someargument1 someargument2
     
     It "Passes the correct arguments to Invoke-External" {
       Assert-MockCalled Invoke-External -ModuleName posh-awsvault `
         -ParameterFilter { 
           $Command -eq "aws-vault" -and `
-          (Compare-Object $Arguments @("exec", "someprofile", "somecommand", "someargument")).Length -eq 0
+          (Compare-Object $Arguments @("exec", "someprofile", "somecommand", "someargument1", "someargument2")).Length -eq 0
         }
     }
 

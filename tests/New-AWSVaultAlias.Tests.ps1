@@ -1,7 +1,7 @@
 Describe "New-AWSVaultAlias" {
   Import-Module .\posh-awsvault.psd1
 
-  Context "Calling New-AWSVaultAlias" {
+  Context "When called with an alias name" {
     $TestState = @{
       "Alias" = $null
       "Function" = $null
@@ -9,7 +9,7 @@ Describe "New-AWSVaultAlias" {
 
     New-AWSVaultAlias somecommand
 
-    It "Creates an alias" {
+    It "Creates an alias named the same as the command" {
       $TestState["Alias"] = Get-Alias somecommand
       $TestState["Alias"] | Should -Not -BeNull
       Write-Debug ($TestState["Alias"] | Out-String)
@@ -29,8 +29,7 @@ Describe "New-AWSVaultAlias" {
       &($TestState["Function"].Name) someargument
 
       Assert-MockCalled Invoke-AWSVault -ModuleName $TestState["Function"].Module -ParameterFilter {
-        $args[0] -eq "somecommand"
-        $true
+        $CommandName -eq "somecommand"
       }
     }
 

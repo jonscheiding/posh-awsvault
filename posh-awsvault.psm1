@@ -1,37 +1,43 @@
 function New-AWSVaultAlias {
   param(
     [Parameter(Mandatory = $true)]
-    [string] $CommandName
+    [string] $AliasName
   )
 
-  $ModuleName = "posh-awsvault-$CommandName"
+  $ModuleName = "posh-awsvault-$AliasName"
 
-  $Module = New-Module -Name $ModuleName -ArgumentList $CommandName {
+  $Module = New-Module -Name $ModuleName -ArgumentList $AliasName {
     param(
-      [Parameter(Position = 0)] $CommandName
+      [Parameter(Position = 0)] $AliasName
     )
 
-    $FunctionName = "Invoke-AWSVault_$CommandName"
+    $FunctionName = "Invoke-AWSVault_$AliasName"
 
     $FunctionScriptBlock = {
-      Invoke-AWSVault (Get-Command $CommandName) $args
+      Invoke-AWSVault $AliasName $args
     }
   
     Set-Item -Path function:\$FunctionName -Value $FunctionScriptBlock
-    Set-Alias -Name $CommandName -Value $FunctionName
+    Set-Alias -Name $AliasName -Value $FunctionName
 
-    Export-ModuleMember -Alias $CommandName -Function $FunctionName
+    Export-ModuleMember -Alias $AliasName -Function $FunctionName
   }
   
   $Module | Import-Module -Force -Global
 }
 
 function Invoke-AWSVault {
+  param(
+    [Parameter()] $CommandName,
+    [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
+  )
+
   $AWSProfile = (Get-Item Env:\AWS_PROFILE).Value
-  $Command = $args[0]
 
   Write-Host -ForegroundColor Cyan `
-    "Invoking aws-vault for $Command with profile $AWSProfile."
+    "Invoking aws-vault for $CommandName with profile $AWSProfile."
+
+  $Command = Get-Command -CommandType Application $CommandName
 
   try {
     #
@@ -39,7 +45,7 @@ function Invoke-AWSVault {
     # See https://github.com/99designs/aws-vault/issues/410
     #
     Remove-Item Env:\AWS_PROFILE
-    Invoke-External aws-vault exec $AWSProfile -- @args
+    Invoke-External aws-vault exec $AWSProfile -- $Command @CommandArguments
   } finally {
     Set-Item Env:\AWS_PROFILE $AWSProfile
   }
