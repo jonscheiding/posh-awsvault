@@ -16,3 +16,13 @@ before_script:
 
 script:
 - pwsh -Command Invoke-Pester
+
+deploy:
+  provider: script
+  on:
+    tags: true
+  script: pwsh ./build/publish-module.ps1 -ModuleVersion $TRAVIS_TAG -NuGetApiKey $NUGET_API_KEY
+
+env:
+  global:
+    secure: HjCOCVZfdyoNcog7ZXHK41LifSmYAPV8wAjScL4jQrpIfn+zx6d6rRN7Qzn4BQeMUv4Y6A/UxV1De0WT0++0nnhWbbSLhXyrtGyeIMyRq2vk3XBwYhREHseo9oz00u4gwURF/FiYtTCsCE0TcQlTPrfu1wcqMTiWHeQBkDvcFLHxFfH62ibDwKt7fH03bkAr7ixpQzwetomgJvd0V/Xb48mOE/W6/uiwXbcEGioAg2gaYczTTwNNoiqh/dCxk5540aIPCRiVJpAXIMdMx16QglB32UuU5gA4Hkh6OtsN1v1o6pm1a6QMpY6yVGrEzIStRQVZPEKGEW/6DMQ06JWtxmzi8vOG56qOAFdjmjw6sQ+5e8TDy79elqzvnSHbFhji9Rah958jx6e6q0vdV4BcT68pclC6PuhWC/feczDnWinEpR5DR5ARBE5tXTay6LXGyb1PFiv74h/GyddbPo/LpRuFRMx7JAcFKGYkAMLElYkrZby5fPQT9m33US086pQlTy8N+xysNuj4vIzuUx1KSRoIxoKDm5GrrwJQvkHZ6IqfcsR0nRFQGfxDZmUgdq2UJp7yiQBCl2Zn0vPpeEiIF9yo9CwdvljEFye2p/SEuJjOK5tcy7hGICqi98ZRpGv67+1gmesQH2WUNyj0MpqqGbDIBL27wvqfBb8WByUdiUE=
