@@ -39,7 +39,7 @@ function New-AWSVaultAlias {
     $FunctionName = "Invoke-AWSVault_$AliasName"
 
     $FunctionScriptBlock = {
-      Invoke-AWSVault $CommandName $args
+      Invoke-AWSVault $CommandName @args
     }
   
     Set-Item -Path function:\$FunctionName -Value $FunctionScriptBlock
@@ -111,6 +111,8 @@ function Invoke-AWSVault {
 
   Write-Host -ForegroundColor Cyan `
     "Invoking aws-vault for $CommandName with profile $AWSProfile."
+
+  Write-Debug "$CommandName ($CommandArguments)"
 
   $Command = Get-Command -CommandType Application $CommandName
 
