@@ -1,4 +1,23 @@
 function New-AWSVaultAlias {
+  <#
+    .SYNOPSIS
+      Creates an aws-vault alias.
+
+    .DESCRIPTION
+      When called with a command name, creates an alias that does the equivalent of
+      aws-vault exec $Env:AWS_PROFILE command.
+
+    .PARAMETER AliasName
+      The name of the alias.
+
+    .PARAMETER CommandName
+      The command to execute.  If omitted, it will be assumed to be the same as
+      AliasName.
+
+    .LINK
+      https://www.github.com/jonscheiding/posh-awsvault
+  #>
+
   param(
     [Parameter(Position = 0, Mandatory = $true)]
     [string] $AliasName,
@@ -33,6 +52,17 @@ function New-AWSVaultAlias {
 }
 
 function Remove-AWSVaultAlias {
+  <#
+    .SYNOPSIS
+      Removes an aws-vault alias that was created by New-AWSVaultAlias.
+
+    .PARAMETER AliasName
+      The name of the alias to remove.
+
+    .LINK
+      https://www.github.com/jonscheiding/posh-awsvault
+  #>
+
   param(
     [Parameter(Position = 0, Mandatory = $true)]
     [string] $AliasName
@@ -52,6 +82,26 @@ function Remove-AWSVaultAlias {
 }
 
 function Invoke-AWSVault {
+  <#
+    .SYNOPSIS
+      Provides a convenient wrapper for aws-vault.
+
+    .DESCRIPTION
+      Calling this with a command is basically equivalent to calling 
+      aws-vault exec $Env:AWS_PROFILE command.
+      
+      But, see https://github.com/99designs/aws-vault/issues/410 for caveats.
+
+    .PARAMETER CommandName
+      The command to execute.
+    
+    .PARAMETER CommandArguments
+      The arguments to pass to the command specified by CommandName.
+
+    .LINK
+      https://www.github.com/jonscheiding/posh-awsvault
+  #>
+
   param(
     [Parameter()] $CommandName,
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
