@@ -1,20 +1,26 @@
 function New-AWSVaultAlias {
   param(
-    [Parameter(Mandatory = $true)]
-    [string] $AliasName
+    [Parameter(Position = 0, Mandatory = $true)]
+    [string] $AliasName,
+    [Parameter(Position = 1)]
+    [string] $CommandName
   )
 
   $ModuleName = "posh-awsvault-$AliasName"
+  if([string]::IsNullOrEmpty($CommandName)) {
+    $CommandName = $AliasName
+  }
 
-  $Module = New-Module -Name $ModuleName -ArgumentList $AliasName {
+  $Module = New-Module -Name $ModuleName -ArgumentList @($AliasName, $CommandName) {
     param(
-      [Parameter(Position = 0)] $AliasName
+      [Parameter(Position = 0)] $AliasName,
+      [Parameter(Position = 2)] $CommandName
     )
 
     $FunctionName = "Invoke-AWSVault_$AliasName"
 
     $FunctionScriptBlock = {
-      Invoke-AWSVault $AliasName $args
+      Invoke-AWSVault $CommandName $args
     }
   
     Set-Item -Path function:\$FunctionName -Value $FunctionScriptBlock
