@@ -98,10 +98,10 @@ PrivateData = @{
         # Tags = @()
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/jonscheiding/posh-vault/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/jonscheiding/posh-awsvault/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/jonscheiding/posh-vault'
+        ProjectUri = 'https://github.com/jonscheiding/posh-awsvault'
 
         # A URL to an icon representing this module.
         # IconUri = ''
