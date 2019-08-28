@@ -1,5 +1,5 @@
 Describe "New-AWSVaultAlias" {
-  Import-Module .\posh-awsvault.psd1
+  Import-Module -Force .\posh-awsvault.psd1
 
   $TestCases = @{
     "When called with only an alias name" = @( "somecommand" )

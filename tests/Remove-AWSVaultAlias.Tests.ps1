@@ -1,5 +1,5 @@
 Describe "Remove-AWSVaultAlias" {
-  Import-Module .\posh-awsvault.psd1
+  Import-Module -Force .\posh-awsvault.psd1
 
   Context "When called to remove a posh-awsvault alias" {
     New-AWSVaultAlias somecommand
