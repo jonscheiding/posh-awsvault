@@ -130,7 +130,7 @@ function Invoke-AWSVault {
     # See https://github.com/99designs/aws-vault/issues/410
     #
     Remove-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue
-    Invoke-External aws-vault exec $AWSProfile -- $Command @CommandArguments
+    Invoke-External aws-vault exec $AWSProfile `-- $Command @CommandArguments
   } finally {
     if($WasAWSProfileSet) {
       Set-Item Env:\AWS_PROFILE $AWSProfile
@@ -144,7 +144,7 @@ function Invoke-External {
     [Parameter(ValueFromRemainingArguments = $true)] $Arguments
   )
 
-  & $Command $Arguments
+  & $Command @Arguments
 }
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { 

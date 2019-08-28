@@ -25,7 +25,7 @@ Describe "Invoke-AWSVault" {
       Assert-MockCalled Invoke-External -ModuleName posh-awsvault `
         -ParameterFilter { 
           $Command -eq "aws-vault" -and `
-          (Compare-Object $Arguments @("exec", "someprofile", "somecommand", "someargument1", "someargument2")).Length -eq 0
+          (Compare-Object $Arguments @("exec", "--", "someprofile", "somecommand", "someargument1", "someargument2")).Length -eq 0
         }
     }
 
