@@ -33,13 +33,13 @@ function New-AWSVaultAlias {
   $Module = New-Module -Name $ModuleName -ArgumentList @($AliasName, $CommandName) {
     param(
       [Parameter(Position = 0)] $AliasName,
-      [Parameter(Position = 2)] $CommandName
+      [Parameter(Position = 1)] $CommandName
     )
 
     $FunctionName = "Invoke-AWSVault_$AliasName"
 
     $FunctionScriptBlock = {
-      Invoke-AWSVault $CommandName @args
+      Invoke-WithAWSVaultExec $CommandName @args
     }
   
     Set-Item -Path function:\$FunctionName -Value $FunctionScriptBlock
@@ -84,7 +84,46 @@ function Remove-AWSVaultAlias {
 function Invoke-AWSVault {
   <#
     .SYNOPSIS
-      Provides a convenient wrapper for aws-vault.
+      Wraps aws-vault with a workaround for https://github.com/99designs/aws-vault/issues/410.
+
+    .LINK
+      https://www.github.com/jonscheiding/posh-awsvault
+  #>
+
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
+  )
+
+  $AWSProfile = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue)
+  $WasAWSProfileSet = $true
+
+  if($null -eq $AWSProfile) {
+    $AWSProfile = "default"
+    $WasAWSProfileSet = $false
+  } else {
+    $AWSProfile = $AWSProfile.Value
+  }
+
+  $AWSVault = Get-Command -CommandType Application aws-vault;
+
+  try {
+    #
+    # AWS_PROFILE needs to be unset while calling aws-vault
+    # See https://github.com/99designs/aws-vault/issues/410
+    #
+    Remove-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue
+    Invoke-External $AWSVault @CommandArguments
+  } finally {
+    if($WasAWSProfileSet) {
+      Set-Item Env:\AWS_PROFILE $AWSProfile
+    }
+  }
+}
+
+function Invoke-WithAWSVaultExec {
+  <#
+    .SYNOPSIS
+      Provides a convenient wrapper for aws-vault exec.
 
     .DESCRIPTION
       Calling this with a command is basically equivalent to calling 
@@ -107,16 +146,6 @@ function Invoke-AWSVault {
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
-  $AWSProfile = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue)
-  $WasAWSProfileSet = $true
-
-  if($null -eq $AWSProfile) {
-    $AWSProfile = "default"
-    $WasAWSProfileSet = $false
-  } else {
-    $AWSProfile = $AWSProfile.Value
-  }
-
   Write-Host -ForegroundColor Cyan `
     "Invoking aws-vault for $CommandName with profile $AWSProfile."
 
@@ -124,18 +153,7 @@ function Invoke-AWSVault {
 
   $Command = Get-Command -CommandType Application $CommandName
 
-  try {
-    #
-    # AWS_PROFILE needs to be unset while calling aws-vault
-    # See https://github.com/99designs/aws-vault/issues/410
-    #
-    Remove-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue
-    Invoke-External aws-vault exec $AWSProfile `-- $Command @CommandArguments
-  } finally {
-    if($WasAWSProfileSet) {
-      Set-Item Env:\AWS_PROFILE $AWSProfile
-    }
-  }
+  Invoke-AWSVault exec (Get-AWSProfile -OrDefault) `-- $Command @CommandArguments
 }
 
 function Invoke-External {
@@ -147,10 +165,26 @@ function Invoke-External {
   & $Command @Arguments
 }
 
+function Get-AWSProfile {
+  param(
+    [switch] $OrDefault
+  )
+
+  $Item = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue);
+  
+  if($null -eq $Item) {
+    if($OrDefault) { return "default" }
+    return $null;
+  }
+
+  return $Item.Value
+}
+
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { 
   Get-Module `
     | Where-Object { $_.Name.StartsWith("posh-awsvault-") } `
     | Remove-Module
 }
 
-New-Alias awsv Invoke-AWSVault
+New-Alias awsv Invoke-WithAWSVaultExec
+New-Alias aws-vault Invoke-AWSVault

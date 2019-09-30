@@ -1,6 +1,6 @@
 $DebugPreference = "Continue"
 
-Describe "Invoke-AWSVault" {
+Describe "Invoke-WithAWSVaultExec" {
   Import-Module -Force .\posh-awsvault.psd1
 
   $global:TEST_VARS = @{
@@ -19,7 +19,7 @@ Describe "Invoke-AWSVault" {
       Write-Debug "Invoke-External -Command $Command -Arguments $Arguments" 
     }
 
-    Invoke-AWSVault somecommand someargument1 someargument2
+    Invoke-WithAWSVaultExec somecommand someargument1 someargument2
     
     It "Passes the correct arguments to Invoke-External" {
       Assert-MockCalled Invoke-External -ModuleName posh-awsvault `
@@ -43,7 +43,7 @@ Describe "Invoke-AWSVault" {
     }
 
     It "Bubbles up the exception" {
-      { Invoke-AWSVault somecommand someargument } | Should -Throw
+      { Invoke-WithAWSVaultExec somecommand someargument } | Should -Throw
     }
 
     It "Still resets the AWS_PROFILE environment variable" {

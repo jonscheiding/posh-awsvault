@@ -36,14 +36,14 @@ Describe "New-AWSVaultAlias" {
         Write-Debug ($TestState["Function"] | Out-String)
       }
 
-      Mock Invoke-AWSVault -ModuleName $TestState["Alias"].Module { 
-        Write-Debug "Invoke-AWSVault $($args[0]) $($args[1])"
+      Mock Invoke-WithAWSVaultExec -ModuleName $TestState["Function"].Module { 
+        Write-Debug "Invoke-WithAWSVaultExec $($args[0]) $($args[1])"
       } 
 
-      It "Calls Invoke-AWSVault for command $TestCommandName" {
+      It "Calls Invoke-WithAWSVaultExec for command $TestCommandName" {
         &($TestState["Function"].Name)
 
-        Assert-MockCalled Invoke-AWSVault -ModuleName $TestState["Function"].Module -ParameterFilter {
+        Assert-MockCalled Invoke-WithAWSVaultExec -ModuleName $TestState["Function"].Module -ParameterFilter {
           $CommandName -eq $TestCommandName
         }
       }
