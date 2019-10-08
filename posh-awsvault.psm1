@@ -146,6 +146,8 @@ function Invoke-WithAWSVaultExec {
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
+  $AWSProfile = Get-AWSProfile -OrDefault
+
   Write-Host -ForegroundColor Cyan `
     "Invoking aws-vault for $CommandName with profile $AWSProfile."
 
@@ -153,7 +155,7 @@ function Invoke-WithAWSVaultExec {
 
   $Command = Get-Command -CommandType Application $CommandName
 
-  Invoke-AWSVault exec (Get-AWSProfile -OrDefault) `-- $Command @CommandArguments
+  Invoke-AWSVault exec $AWSProfile `-- $Command @CommandArguments
 }
 
 function Invoke-External {
