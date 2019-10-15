@@ -94,6 +94,8 @@ function Invoke-AWSVault {
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
+  Write-Host $CommandArguments
+
   $AWSProfile = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue)
   $WasAWSProfileSet = $true
 
@@ -153,7 +155,7 @@ function Invoke-WithAWSVaultExec {
 
   Write-Debug "$CommandName ($CommandArguments)"
 
-  $Command = Get-Command -CommandType Application $CommandName
+  $Command = Get-Command -CommandType Application $CommandName | Select-Object -First 1
 
   Invoke-AWSVault exec $AWSProfile `-- $Command @CommandArguments
 }
