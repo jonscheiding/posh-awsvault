@@ -94,8 +94,6 @@ function Invoke-AWSVault {
     [Parameter(ValueFromRemainingArguments = $true)] $CommandArguments
   )
 
-  Write-Host $CommandArguments
-
   $AWSProfile = (Get-Item Env:\AWS_PROFILE -ErrorAction SilentlyContinue)
   $WasAWSProfileSet = $true
 
